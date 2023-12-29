@@ -22,7 +22,7 @@ void* threadFunc(void* arg)
     for (int i = 0; i < tData->experements; ++i) {
         firstP = tData->numberOfPointsFirst;
         secondP = tData->numberOfPointsSecond;
-        for (int j = 0; j < tData->plays - tData->tour + 1; ++j) { // + 1, тк индексация с 0
+        for (int j = 0; j < tData->plays - tData->tour + 1; ++j) { 
             firstP += rand_r(&seed) % 6 + 1; 
             firstP += rand_r(&seed) % 6 + 1;
             secondP += rand_r(&seed) % 6 + 1;
@@ -48,10 +48,6 @@ int main(int argc, char* argv[])
                   << argv[0] << " <NUMBER_OF_THREADS>\n";
         exit(EXIT_FAILURE);
     }
-
-    clock_t startTime, endTime;
-    float timer;
-    startTime = clock();
 
     int numberOfThreads = atoi(argv[1]);
 
@@ -90,6 +86,11 @@ int main(int argc, char* argv[])
         tData[i].winChanceSecond = 0;
     }
 
+    typedef std::chrono::high_resolution_clock clock;
+    typedef std::chrono::duration<float, std::milli> duration;
+
+    static clock::time_point start = clock::now();
+
     pthread_t th[numberOfThreads];
 
     for (int i = 0; i < numberOfThreads; ++i) {
@@ -115,9 +116,8 @@ int main(int argc, char* argv[])
     std::cout << "Probability of the second player to win: " 
               << percentWinsSecond / experements << std::endl;
 
-    endTime = clock();
-    timer = endTime - startTime;
-    std::cout << "Time: " << timer / CLOCKS_PER_SEC << std::endl;
+    duration elapsed = clock::now() - start;
+    std::cout << "Time: " << elapsed.count() << std::endl;
     
     return 0;
 }
